@@ -52,8 +52,8 @@
 
   let dateFormats = getDateFormats();
 
-  onMount(async () => {
-    await loadLogs()
+  onMount(() => {
+    loadLogs() // Don't await - run in background
 
     unsubLastUsedStore = UsageStore.subscribe((lus) => {
       lastUsedState = lus
@@ -118,6 +118,11 @@
 </script>
 
 <div class="streak-2 bg-white dark:bg-black py-1">
+  {#if loading}
+    <div class="flex items-center justify-center h-16 text-gray-400">
+      <span class="text-sm">Loading streak data...</span>
+    </div>
+  {:else}
   <!-- {#if `${selectedIndex}`.length}
     <button
       on:click={() => {
@@ -199,7 +204,8 @@
         +
       </button>
     </div>
-  </Scroller>
+</Scroller>
+{/if}
 </div>
 
 <style lang="postcss" global>

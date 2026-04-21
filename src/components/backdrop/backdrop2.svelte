@@ -48,8 +48,8 @@ import type { SvelteComponentDev } from 'svelte/internal';
 
   {#each $BackdropStore2 as modal, index (modal.id)}
     <div
-      in:fly|global={{ y: 200, duration: 60, easing: quadInOut }}
-      out:fly|global={{ y: 200, duration: 60, easing: quadInOut }}
+      in:fly|global={{ y: 200, duration: 0, easing: quadInOut }}
+      out:fly|global={{ y: 200, duration: 0, easing: quadInOut }}
       class:in-background={index < $BackdropStore2.length - 1}
       class:in-forground={index == $BackdropStore2.length - 1}
       class="backdrop-modal modal-{modal.position || 'fullscreen'}"

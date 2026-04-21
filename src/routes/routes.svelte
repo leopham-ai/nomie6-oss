@@ -45,7 +45,7 @@
       <Track />
     {/if}
   </Route>
-  <Route path="/track">
+  <Route path="/track" primary={false}>
     <!-- <Track /> -->
     <Track />
   </Route>

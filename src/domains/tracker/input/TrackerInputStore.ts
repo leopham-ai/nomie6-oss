@@ -179,6 +179,7 @@ export const openTrackerInputModal = (props: TrackerInputProps = {}): Promise<Tr
       },
       component: TrackerInputModal,
       position: window.document.body.clientWidth > 500 ? 'center' : 'bottom',
+      tappable: true,
     })
   })
   // TrackerInputStore.update((s: TrackerInputProps) => {

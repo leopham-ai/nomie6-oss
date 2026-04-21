@@ -10,9 +10,16 @@
 
   export let menu: IPopMenuOptions
   export let id: string
+
+  const dispatch = createEventDispatcher()
+
+  function onBackdropTap() {
+    closeModal(id)
+    dispatch('close')
+  }
 </script>
 
-<div class="pop-menu2-wrapper w-full max-w-md" style="min-width:320px;">
+<div class="pop-menu2-wrapper w-full max-w-md" style="min-width:320px;" on:click|self={onBackdropTap}>
   <div class="pop-menu2 shadow-2xl" role="dialog">
     {#if menu.title || menu.description}
       <header class="space-x-3 px-2 flex items-center py-1">

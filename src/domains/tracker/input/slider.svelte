@@ -58,7 +58,7 @@
       value={tempValue}
       min={parseFloat(tracker.min)}
       max={parseFloat(tracker.max)}
-      steps={parseFloat(tracker.step || 1)}
+      step={parseFloat(tracker.step || 1)}
       pips
     />
     <div class="value dark:bg-gray-700 bg-gray-300 px-2 pt-3 pb-1 w-20 -ml-3 -mt-6 rounded-b-xl text-center">

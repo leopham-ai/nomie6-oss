@@ -294,7 +294,7 @@ export const showTrackablePopmenu = async (
   }
 ) => {
   options = options || {}
-  options.component = options.component || StreakScroller
+  // options.component = options.component || StreakScroller // Disabled - was causing delay
   options.componentProps = options.componentProps || { trackable: trackable }
   options.title = options.title || trackable.tag
 

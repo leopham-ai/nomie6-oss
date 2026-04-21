@@ -4,6 +4,8 @@
   import Spinner from '../../components/spinner/spinner.svelte'
 
   import { Interact } from './../../store/interact'
+
+  export let id: string | undefined = undefined
 </script>
 
 {#if $Interact.blocker.show}
