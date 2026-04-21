@@ -12,6 +12,12 @@
             var Buffer = Buffer || []
             var process = process || { env: { DEBUG: undefined }, version: [] }
       </script>
+
+      <!-- Preload LCP element -->
+      <link rel="preload" as="image" href="/app-icons/nomie6-head-120.png">
+
+      <!-- Preconnect to external origins -->
+      <link rel="preconnect" href="https://plausible.casadelange.nl">
       <meta name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
       <base href="." />
@@ -132,7 +138,8 @@
       <div class="loading-screen delete-on-app launch-gradient">
             <div class="text-center h-16">
                   <img src="/app-icons/nomie6-head-120.png"
-                       style="margin-bottom:10px; border-radius: 33%; overflow: hidden; box-shadow: 0px 13px 30px -5px rgba(0, 0, 0, 0.14)" /><br />
+                       style="margin-bottom:10px; border-radius: 33%; overflow: hidden; box-shadow: 0px 13px 30px -5px rgba(0, 0, 0, 0.14)" 
+                       loading="eager" fetchpriority="high" /><br />
                   <div style="text-align: center; opacity:50%">Nomie 6
                         OSS</div>
             </div>
