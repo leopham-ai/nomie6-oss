@@ -28,7 +28,7 @@
 
 <Router>
   <RouteControl />
-  <Route path="/">
+  <Route path="/" primary={false}>
     {#if $Prefs.startPage === 'track'}
       <!-- <Track /> -->
       <Track />

@@ -35,11 +35,13 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
    * Initialize the Store
    */
   const init = async (_data?:any): Promise<KVStoreState> => {
-    console.time(`KVStore.init(${props.label})`)
+    const timerLabel = `KVStore.init(${props.label})`
+    console.timeEnd(timerLabel) // clear if exists from re-entry
+    console.time(timerLabel)
     // Get the Map From Storage
     const map = (await Storage.get(path)) || {}
     data = _data || {};
-    console.timeLog(`KVStore.init(${props.label})`, 'after Storage.get')
+    console.timeLog(timerLabel, 'after Storage.get')
     // Loop over each time
     // initialize if there's an initializer
     Object.keys(map).forEach((key: string) => {
