@@ -185,6 +185,13 @@ const Storage: IStorage = {
     return await this.getEngine().list()
   },
   local: {
+    onReady(func) {
+      // localStorage is synchronous, so call immediately
+      return func(this)
+    },
+    init() {
+      return Promise.resolve()
+    },
     get(path) {
       return JSON.parse(localStorage.getItem(`storage/${path}`) || 'null')
     },
