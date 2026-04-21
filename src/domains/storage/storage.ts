@@ -193,7 +193,12 @@ const Storage: IStorage = {
       return Promise.resolve()
     },
     get(path) {
-      return JSON.parse(localStorage.getItem(`storage/${path}`) || 'null')
+      const key = `storage/${path}`
+      const raw = localStorage.getItem(key)
+      if (raw) {
+        console.log(`Storage.local.get(${path}): ${(raw.length / 1024).toFixed(1)}KB raw`)
+      }
+      return JSON.parse(raw || 'null')
     },
     put(path, value) {
       return localStorage.setItem(`storage/${path}`, JSON.stringify(value))
