@@ -75,8 +75,10 @@ export const AllPointersTrackables = derived(TrackableStore, ($TrackableStore) =
 export const MasterTrackables: ITrackables = {}
 
 export const getTrackablesFromStorage = async (): Promise<ITrackables> => {
+  console.time('getTrackablesFromStorage')
   // Get Poeple Trackers Pointers and Context
   const finished: Array<any> = await Promise.all([PeopleStore.init(), TrackerStore.init(), ContextStore.init(), PointerStore.init()])
+  console.timeLog('getTrackablesFromStorage', 'after Promise.all init')
 
   const people: IPeople = finished[0] || {}
   const trackers: ITrackers = finished[1] || {}
@@ -114,6 +116,7 @@ export const getTrackablesFromStorage = async (): Promise<ITrackables> => {
       MasterTrackables[trackable.tag] = trackable
     })
   }
+  console.timeLog('getTrackablesFromStorage', 'after conversion')
 
   return MasterTrackables
 }

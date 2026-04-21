@@ -81,16 +81,22 @@ export const bootNomie = async ($Prefs: PreferencesStateType) => {
   return new Promise((resolve) => {
     try {
       Storage.onReady(async () => {
+        console.time('bootNomie')
         if (locked && $Prefs.usePin) {
           await presentLockScreen($Prefs)
         }
+        console.timeLog('bootNomie', 'after lock screen')
         await LedgerStore.init()
+        console.timeLog('bootNomie', 'after LedgerStore.init')
         const trackables = await InitTrackableStore()
+        console.timeLog('bootNomie', 'after InitTrackableStore')
 
         bootCoreComponents(trackables)
+        console.timeLog('bootNomie', 'after bootCoreComponents')
         // If not ready, we don't have an account firing 
         // the ready state - we will manually do it here.
 
+        console.timeEnd('bootNomie')
         resolve(true)
       })
     } catch (e) {

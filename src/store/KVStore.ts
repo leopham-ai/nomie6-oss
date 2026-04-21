@@ -35,9 +35,11 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
    * Initialize the Store
    */
   const init = async (_data?:any): Promise<KVStoreState> => {
+    console.time(`KVStore.init(${props.label})`)
     // Get the Map From Storage
     const map = (await Storage.get(path)) || {}
     data = _data || {};
+    console.timeLog(`KVStore.init(${props.label})`, 'after Storage.get')
     // Loop over each time
     // initialize if there's an initializer
     Object.keys(map).forEach((key: string) => {
@@ -50,6 +52,8 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
     if(props.initialized) {
       props.initialized(map, data);
     }
+    console.timeLog(`KVStore.init(${props.label})`, 'after update')
+    console.timeEnd(`KVStore.init(${props.label})`)
     return map
   }
 
