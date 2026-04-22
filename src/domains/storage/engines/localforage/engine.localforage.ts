@@ -3,6 +3,21 @@ import type { IStorage } from '../../storage'
 
 let listeners = []
 
+/**
+ * Safely parse JSON with error recovery for corrupt data
+ * Returns null on parse failure instead of throwing
+ */
+function safeJsonParse(content: any): any {
+  if (!content) return null
+  if (typeof content === 'object') return content // Already parsed
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    console.error('localforage: Failed to parse JSON', e)
+    return null
+  }
+}
+
 export const LocalForageEngine: IStorage = {
   onReady(func) {
     // No need to setup just call the function
@@ -37,11 +52,13 @@ export const LocalForageEngine: IStorage = {
     }
   },
   async put(path, content) {
-    return localforage.setItem(path, JSON.stringify(content))
+    // Avoid re-stringifying already-stringified content
+    const serialized = typeof content === 'string' ? content : JSON.stringify(content)
+    return localforage.setItem(path, serialized)
   },
   async get(path) {
     return localforage.getItem(path).then((content: any) => {
-      return content ? JSON.parse(content) : null
+      return safeJsonParse(content)
     })
   },
   async list() {
