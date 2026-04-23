@@ -152,8 +152,7 @@ const Storage: IStorage = {
   },
   async init() {
     try {
-      let engineProfile = this.getEngine().init()
-      return engineProfile
+      return await this.getEngine().init()
     } catch (e) {
       const loadLocal = await Interact.confirm('Error loading this storage engine', `${e}.\n Restart with Local Storage?`);
       if (loadLocal) {
