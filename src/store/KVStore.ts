@@ -9,6 +9,28 @@ type DocStorePropTypes = {
   initialized?: Function
 }
 
+// Debounce window for storage writes (ms)
+const DEBOUNCE_MS = 500
+
+// Global registry for beforeunload flush — all created stores register here
+const _allStores: Array<{ flush: () => Promise<unknown> }> = []
+
+/**
+ * Flush all registered KVStores — call on app beforeunload.
+ * @returns promise that resolves when all stores have flushed
+ */
+export const flushAllKVStores = async (): Promise<void> => {
+  await Promise.all(_allStores.map((s) => s.flush()))
+}
+
+/**
+ * @deprecated use flushAllKVStores — removes a store from the flush registry
+ */
+export const _unregisterKVStore = (store: { flush: () => Promise<unknown> }) => {
+  const idx = _allStores.indexOf(store)
+  if (idx >= 0) _allStores.splice(idx, 1)
+}
+
 export type KVStoreState = {
   [key: string]: any
 }
@@ -30,6 +52,11 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
   const baseState: KVStoreState = {}
   const { update, subscribe, set } = writable(baseState)
   let data: any = {}
+
+  // Debounce state for storage writes
+  let writeTimer: ReturnType<typeof setTimeout> | null = null
+  let pendingState: KVStoreState | null = null
+  let writeResolvers: Array<(state: KVStoreState) => void> = []
 
   /**
    * Initialize the Store
@@ -60,24 +87,64 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
   }
 
   /**
-   * Write to Storage
+   * Flush pending state to storage immediately.
+   * Called on app unload to ensure data is persisted.
+   * @returns promise that resolves when write completes
+   */
+  const flush = async (): Promise<KVStoreState> => {
+    if (writeTimer) {
+      clearTimeout(writeTimer)
+      writeTimer = null
+    }
+    if (pendingState) {
+      const state = pendingState
+      pendingState = null
+      await _doWrite(state)
+    }
+    return rawState()
+  }
+
+  /**
+   * Actually write state to storage (called by debounced _write or flush)
    * @param state
    * @returns
    */
-  const _write = async (state: KVStoreState): Promise<KVStoreState> => {
-    // Clone State
-    // const serverState = await _read();
-    // Try pulling from server for anything not on this device
-    const _state = state;
-
-    // Loop over keys and serialize if serializer
+  const _doWrite = async (state: KVStoreState): Promise<KVStoreState> => {
+    // Clone and serialize
+    const _state = JSON.parse(JSON.stringify(state))
     Object.keys(_state).map((key) => {
-      const item = props.itemSerializer ? props.itemSerializer(_state[key]) : state[key]
+      const item = props.itemSerializer ? props.itemSerializer(_state[key]) : _state[key]
       _state[key] = item
     })
     // Save to Storage
     await Storage.put(path, _state)
     return state
+  }
+
+  /**
+   * Debounced write — batches rapid updates into a single storage write.
+   * Resolves when the debounced write actually completes.
+   * @param state
+   * @returns promise
+   */
+  const _write = async (state: KVStoreState): Promise<KVStoreState> => {
+    pendingState = state
+    if (writeTimer) clearTimeout(writeTimer)
+    return new Promise<KVStoreState>((resolve) => {
+      writeResolvers.push(resolve)
+      writeTimer = setTimeout(async () => {
+        writeTimer = null
+        const toWrite = pendingState
+        pendingState = null
+        if (toWrite) {
+          await _doWrite(toWrite)
+        }
+        // Resolve all waiters with the current raw state
+        const current = rawState()
+        writeResolvers.forEach((r) => r(current))
+        writeResolvers = []
+      }, DEBOUNCE_MS)
+    })
   }
 
   /**
@@ -161,6 +228,10 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
     return state
   }
 
+  // Register this store for global flushAll
+  const storeHandle = { flush }
+  _allStores.push(storeHandle)
+
   // Return base methods
   return {
     init,
@@ -172,5 +243,6 @@ export const createKVStore = (path: string, props: DocStorePropTypes) => {
     subscribe,
     set,
     rawState,
+    flush,
   }
 }

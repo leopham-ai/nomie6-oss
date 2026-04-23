@@ -34,4 +34,17 @@ const app = new NomieApp({
   target: document.body,
 })
 
+// Flush all KVStore pending writes before the page unloads
+export const flushStores = () => import('./store/KVStore').then(({ flushAllKVStores }) => flushAllKVStores())
+window.addEventListener('beforeunload', () => {
+  flushStores()
+})
+
+// Also flush on page visibility change (mobile tab switch / background)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    flushStores()
+  }
+})
+
 export default app
