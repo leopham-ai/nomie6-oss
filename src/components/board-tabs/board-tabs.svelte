@@ -10,7 +10,7 @@
   import type { UniboardType } from '../../domains/board/UniboardStore'
   import SortableList2 from '../sortable-list/sortable-list2.svelte'
   import CloseOutline from '../../n-icons/CloseOutline.svelte'
-  import AddOutline from '../../n-icons/AddOutline.svelte'
+  import AddIcon from '../../n-icons/AddIcon.svelte'
 
   import { Interact } from '../../store/interact'
   import { showToast } from '../toast/ToastStore'
@@ -130,7 +130,7 @@
             title="Add trackables to board"
             on:click={() => quickAddToBoard(active)}
           >
-            <IonIcon icon={AddOutline} size={20} />
+            <IonIcon icon={AddIcon} size={20} />
           </button>
         {/if}
       </NHScroller>
