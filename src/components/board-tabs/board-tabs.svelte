@@ -10,10 +10,16 @@
   import type { UniboardType } from '../../domains/board/UniboardStore'
   import SortableList2 from '../sortable-list/sortable-list2.svelte'
   import CloseOutline from '../../n-icons/CloseOutline.svelte'
+  import AddOutline from '../../n-icons/AddOutline.svelte'
 
   import { Interact } from '../../store/interact'
   import { showToast } from '../toast/ToastStore'
   import { Prefs } from '../../domains/preferences/Preferences'
+  import { TrackableStore } from '../../domains/trackable/TrackableStore'
+  import { toTrackableArray } from '../../domains/trackable/trackable-utils'
+  import { addTrackablesToBoard } from '../../domains/board/UniboardStore'
+  import { openPopMenu } from '../../components/pop-menu/usePopmenu'
+  import type { Trackable } from '../../domains/trackable/Trackable.class'
 
   export let boards: Array<UniboardType> = []
 
@@ -65,6 +71,32 @@
       showToast({ message: 'Deleted' })
     }
   }
+
+  async function quickAddToBoard(board: UniboardType) {
+    const trackables = toTrackableArray($TrackableStore)
+    const existingIds = new Set(board.elements || [])
+    const available = trackables.filter((t) => !existingIds.has(t.id))
+
+    if (!available.length) {
+      showToast({ message: 'All trackables already on this board' })
+      return
+    }
+
+    const buttons = available.slice(0, 20).map((t: Trackable) => ({
+      title: t.label,
+      emoji: t.emoji,
+      click: async () => {
+        await addTrackablesToBoard([t], board)
+        showToast({ message: `Added ${t.label} to ${board.label}` })
+      }
+    }))
+
+    openPopMenu({
+      id: 'quick-add-board',
+      title: `Add to ${board.label}`,
+      buttons
+    })
+  }
 </script>
 
 {#if $CombinedBoards && $CombinedBoards.length === 1}
@@ -92,6 +124,15 @@
         {/each}
         <slot />
         <slot name="right" />
+        {#if !state.editMode && active && active.id !== '_all' && active.id !== '_timers'}
+          <button
+            class="tab add-to-board"
+            title="Add trackables to board"
+            on:click={() => quickAddToBoard(active)}
+          >
+            <IonIcon icon={AddOutline} size={20} />
+          </button>
+        {/if}
       </NHScroller>
     {:else if ready}
       <SortableList2
@@ -134,5 +175,9 @@
   }
   button.inactive {
     opacity: 0.8;
+  }
+  button.add-to-board {
+    @apply opacity-60;
+    @apply hover:opacity-100;
   }
 </style>
