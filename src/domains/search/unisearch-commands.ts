@@ -15,6 +15,7 @@ export const unisearchCommands: Array<PopMenuButton> = [
   {
     title: 'Create Custom tracker',
     description: 'Create and Add a new tracker! ',
+    shortcut: '⌘⇧T',
     click() {
       openTrackableEditor(
         new Trackable({
@@ -28,6 +29,7 @@ export const unisearchCommands: Array<PopMenuButton> = [
     title: 'Write Journal Entry',
     icon: CreateOutline,
     description: 'Browse the nomie library of trackers, add create',
+    shortcut: '⌘J',
     click() {
       ActiveLogStore.journal(new NLog({}))
     },
@@ -35,12 +37,14 @@ export const unisearchCommands: Array<PopMenuButton> = [
   {
     title: 'Open Library',
     description: 'Browse the nomie library of trackers, add create',
+    shortcut: '⌘L',
     click() {
       TrackerLibrary.toggle()
     },
   },
   {
     title: 'Dark Theme',
+    shortcut: '⌘⇧D',
     click() {
       Prefs.update((s) => {
         s.theme = 'dark'
@@ -52,6 +56,7 @@ export const unisearchCommands: Array<PopMenuButton> = [
   },
   {
     title: 'Light Theme',
+    shortcut: '⌘⇧L',
     click() {
       Prefs.update((s) => {
         s.theme = 'light'
@@ -63,6 +68,7 @@ export const unisearchCommands: Array<PopMenuButton> = [
   },
   {
     title: 'System Theme',
+    shortcut: '⌘⇧A',
     click() {
       Prefs.update((s) => {
         s.theme = 'auto'
@@ -74,6 +80,7 @@ export const unisearchCommands: Array<PopMenuButton> = [
   },
   {
     title: 'Generate Backup',
+    shortcut: '⌘⇧B',
     click() {
       generateBackup()
     },

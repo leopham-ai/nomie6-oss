@@ -280,6 +280,9 @@ import { openTimelineModal } from '../timeline/timeline-helpers';
                 {#if command.icon}
                   <IonIcon icon={command.icon} />
                 {/if}
+                {#if command.shortcut}
+                  <span class="command-shortcut">{command.shortcut}</span>
+                {/if}
               </button>
               {#if index < results.commands.length - 1}
                 <Divider left={16} />
@@ -480,5 +483,14 @@ import { openTimelineModal } from '../timeline/timeline-helpers';
   .unisearch button.selectable main {
     @apply flex-grow flex-shrink;
     @apply w-full;
+  }
+
+  .unisearch .command-shortcut {
+    @apply text-xs;
+    @apply px-2 py-0.5;
+    @apply bg-gray-200 dark:bg-gray-700;
+    @apply rounded;
+    @apply text-gray-500 dark:text-gray-400;
+    @apply font-mono;
   }
 </style>

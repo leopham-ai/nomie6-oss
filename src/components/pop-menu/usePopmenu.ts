@@ -18,6 +18,7 @@ export type PopMenuButton = {
   divider?: boolean
   skipClosing?: boolean
   awardRequired?: string,
+  shortcut?: string
   component?: SvelteComponentDev
 }
 
